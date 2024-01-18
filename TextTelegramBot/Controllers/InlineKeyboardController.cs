@@ -28,8 +28,8 @@ namespace TelegramBotTask.Controllers
             // Генерим информационное сообщение
             string TypeMethod = callbackQuery.Data switch
             {
-                "Длина сообщения" => "LehgtMessage",
-                "Сумма чисел" => "SummMssage",
+                "LehgtMessage" => "Длина сообщения",
+                "SummMssage" => "Сумма чисел",
                 _ => String.Empty
             };
 

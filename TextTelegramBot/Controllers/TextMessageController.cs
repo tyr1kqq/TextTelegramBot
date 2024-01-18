@@ -2,6 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
+using TelegramBotTask.Configuration;
 
 namespace TelegramBotTask.Controllers
 {
@@ -35,6 +36,27 @@ namespace TelegramBotTask.Controllers
                 default:
                     await _telegramClient.SendTextMessageAsync(message.Chat.Id, "Отправьте сообщение в этот чат.", cancellationToken: ct);
                     break;
+            }
+        }
+        public async Task Process(string languageCode , Message message , CancellationToken ct)
+        {
+            if (languageCode == "LehgtMessage")
+            {
+                int Leght = message.Text.Length;
+                await _telegramClient.SendTextMessageAsync(message.Chat.Id, $"Длина сообщения - {Leght}");
+            }
+            if (languageCode == "SummMssage")
+            {
+                string messageText = message.Text;
+                string[] Value = messageText.Split(' ');
+                int SummValue = 0;
+
+                foreach (string Val in Value)
+                {
+                    SummValue += int.Parse(Val);
+                }
+
+                await _telegramClient.SendTextMessageAsync(message.Chat.Id, $"Сумма чисел - {SummValue}");
             }
         }
     }
