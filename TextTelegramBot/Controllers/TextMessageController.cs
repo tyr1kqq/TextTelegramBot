@@ -3,16 +3,20 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using TelegramBotTask.Configuration;
+using System.Diagnostics;
+using TelegramBotTask.Services;
 
 namespace TelegramBotTask.Controllers
 {
     public class TextMessageController
     {
         private readonly ITelegramBotClient _telegramClient;
+        private readonly IStorage _memoryStorage;
 
-        public TextMessageController(ITelegramBotClient telegramBotClient)
+        public TextMessageController(ITelegramBotClient telegramBotClient, IStorage memoryStorage)
         {
             _telegramClient = telegramBotClient;
+            _memoryStorage = memoryStorage;
         }
 
         public async Task Handle(Message message, CancellationToken ct)
@@ -32,13 +36,18 @@ namespace TelegramBotTask.Controllers
                     // передаем кнопки вместе с сообщением (параметр ReplyMarkup)
                     await _telegramClient.SendTextMessageAsync(message.Chat.Id, $"<b>  Бот считает сумму числел , либо возвращает длину сообщения .</b> {Environment.NewLine}", cancellationToken: ct, parseMode: ParseMode.Html, replyMarkup: new InlineKeyboardMarkup(buttons));
 
+
                     break;
                 default:
-                    await _telegramClient.SendTextMessageAsync(message.Chat.Id, "Отправьте сообщение в этот чат.", cancellationToken: ct);
+                    
+                    Process(_memoryStorage.GetSession(message.Chat.Id).LanguageCode, message, ct);
                     break;
+
+
             }
+
         }
-        public async Task Process(string languageCode , Message message , CancellationToken ct)
+        public async Task Process(string languageCode, Message message, CancellationToken ct)
         {
             if (languageCode == "LehgtMessage")
             {
@@ -58,6 +67,7 @@ namespace TelegramBotTask.Controllers
 
                 await _telegramClient.SendTextMessageAsync(message.Chat.Id, $"Сумма чисел - {SummValue}");
             }
+
         }
     }
 }
